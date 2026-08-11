@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{{-- <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
@@ -12,4 +12,4 @@
         <a href="{{ url('/kali') }}">Kali</a>
         <a href="{{ url('/bagi') }}">Bagi</a>
     </body>
-</html>
+</html> --}}

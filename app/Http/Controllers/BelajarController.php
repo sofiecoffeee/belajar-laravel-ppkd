@@ -1,4 +1,4 @@
-<?php
+<!-- <?php
 
 namespace App\Http\Controllers;
 
@@ -38,4 +38,4 @@ class BelajarController extends Controller
         $hasil = $angka1 - $angka2;
         return view ('kurang', compact('hasil'));
     }
-}
+} -->

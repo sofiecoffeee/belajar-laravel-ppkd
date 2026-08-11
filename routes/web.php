@@ -1,6 +1,6 @@
 <?php
 
-use \App\Http\Controllers\BelajarController;
+use \App\Http\Controllers\PesertaController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -14,15 +14,43 @@ Route::get('/', function () {
 //PUT : mengirim data dari form, aksinya update, datanya lebih dari 1
 //PATCH : mengirim data dari form, aksinya update
 
-Route::get('/salam', [BelajarController::class, 'greeting']);
 
-// contoh praktik
-Route::get ('counting', [BelajarController::class, 'index']);
+// Controller peserta
+Route::get('peserta', [PesertaController::class, 'index']); //ini harus ganti yang atas yaa yang baris 3
+// bisa juga kayak gini Route::get('peserta', [\App\Http\Controllers\PesertaController::class, 'index']); ga perlu ganti template yang baris 3
 
-//tambah
-Route::get('/hitung-tambah', [BelajarController::class, 'Tambah']);
-// ->name('Hitung tambah'); = tambah ->name kalo mau sambunginnya pake route
+Route::get('create', [PesertaController::class, 'create'])->name('create');
+Route::post('create', [PesertaController::class, 'store'])->name('store');
 
-//Kurang
-Route::get('/hitung-kurang',[BelajarController::class, 'IndexKurang']);
-Route::post('/action-kurang', [BelajarController::class,'Kurang']);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Route::get('/salam', [BelajarController::class, 'greeting']);
+
+// // contoh praktik
+// Route::get ('counting', [BelajarController::class, 'index']);
+
+// //tambah
+// Route::get('/hitung-tambah', [BelajarController::class, 'Tambah']);
+// // ->name('Hitung tambah'); = tambah ->name kalo mau sambunginnya pake route
+
+// //Kurang
+// Route::get('/hitung-kurang',[BelajarController::class, 'IndexKurang']);
+// Route::post('/action-kurang', [BelajarController::class,'Kurang']);
