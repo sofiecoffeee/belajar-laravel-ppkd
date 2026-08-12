@@ -10,8 +10,10 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $title = 'Role';
-        return view('role.index', compact('title'));
+     $title = 'Role';
+    $roles = Role::orderBy('id', 'DESC')->get();
+
+    return view('role.index', compact('title', 'roles'));
     }
 
     /**
@@ -49,7 +51,9 @@ class RoleController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $title = 'Edit';
+        $role = Role::findOrFail($id);
+        return view('role.edit', compact('role', 'title'));
     }
 
     /**

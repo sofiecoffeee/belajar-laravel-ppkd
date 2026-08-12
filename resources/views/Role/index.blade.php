@@ -13,13 +13,16 @@
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody>
+            @foreach ($roles as $index => $value)
                 <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $value->name }}</td>
+
+                    <td>
+                        <a href="{{ route('role.edit', $value->id) }}" class="btn btn-success btn-sm">Edit</a>
+                    </td>
                 </tr>
-            </tbody>
+            @endforeach
         </table>
     </div>
 @endsection
