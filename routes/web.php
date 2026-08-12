@@ -1,6 +1,7 @@
 <?php
 
 use \App\Http\Controllers\PesertaController;
+use \App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -21,7 +22,13 @@ Route::get('peserta', [PesertaController::class, 'index']); //ini harus ganti ya
 
 Route::get('create', [PesertaController::class, 'create'])->name('create');
 Route::post('create', [PesertaController::class, 'store'])->name('store');
+Route::post('store-peserta', [PesertaController::class, 'store'])->name('store-peserta');
+Route::get('edit/{id}', [PesertaController::class, 'edit'])->name('edit.peserta');
+Route::put('update/{id}',[PesertaController::class, 'update'])->name('update.peserta');
+Route::delete('delete/{id}',[PesertaController::class, 'delete'])->name('delete.peserta');
 
+//Controller Role
+Route::resource('role', RoleController::class);
 
 
 
