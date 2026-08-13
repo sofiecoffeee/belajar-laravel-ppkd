@@ -1,8 +1,7 @@
 @extends('app')
 @section('content')
-    <form action="{{ route('role.update', $role->id) }}" method="POST" class="mt-5">
+    <form action="{{ route('category.store') }}" method="POST" class="mt-5">
         @csrf
-        @method('PUT')
 
         <div class="mb-3">
             <label class="form-label">Nama</label>
@@ -24,9 +23,7 @@
         </div>
 
         <div class="mt-3 mb-3">
-            <button class="btn btn-primary" type="submit">
-                Simpan
-            </button>
+            <button class="btn btn-primary" type="submit"></button>
         </div>
     </form>
 @endsection

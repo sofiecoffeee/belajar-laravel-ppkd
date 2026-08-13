@@ -1,6 +1,6 @@
 @extends('app')
 @section('content')
-    <form action="{{ route('role.update', $role->id) }}" method="POST" class="mt-5">
+    <form action="{{ route('category.update', $edit->id) }}" method="POST" class="mt-5">
         @csrf
         @method('PUT')
 
