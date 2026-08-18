@@ -176,7 +176,8 @@
             <li><a href="{{ url('role') }}">Role</a></li>
             <li><a href="{{ url('category') }}">Kategori</a></li>
             <li><a href="{{ url('product') }}">Product</a></li>
-            <li><a href="#">Pengaturan</a></li>
+            <li><a href="{{ url('order') }}">Order Transaction</a></li>
+            <li><a href="{{ url('settings') }}">Pengaturan</a></li>
         </ul>
     </aside>
 

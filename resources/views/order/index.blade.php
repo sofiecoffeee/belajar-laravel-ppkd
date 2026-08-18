@@ -1,7 +1,7 @@
 @extends ('app')
 @section('content')
     <div align="right" class="mb-3">
-        <a href="{{ route('product.create') }}" class="btn btn-primary">Tambah Produk</a>
+        <a href="{{ route('order.create') }}" class="btn btn-primary">Tambah Produk</a>
         {{-- <a href="/create class="btn btn-primary">Tambah Peserta</a>  --> bisa juga pake ini tapi as security kurang --}}
     </div>
     <table class="table table-bordered">
@@ -17,7 +17,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($products as $index => $value)
+            @foreach ($orders as $index => $value)
                 <tr>
                     <td>{{ $index += 1 }}</td>
                     <td>{{ $value->category->name }}</td>
@@ -27,7 +27,7 @@
                             style="object-fit: cover"></td>
                     <td>{{ $value->description }}</td>
                     <td>
-                        <a href="{{ route('product.edit', $value->id) }}" class="btn btn-success btn-sm">Edit</a>
+                        <a href="{{ route('orders.edit', $value->id) }}" class="btn btn-success btn-sm">Edit</a>
                         <form action="{{ route('product.destroy', $value->id) }}" method="post" class="d-inline">
                             @csrf
                             @method('DELETE')
