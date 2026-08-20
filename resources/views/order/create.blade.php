@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Kopi PPKDJ Jakarta Pusat</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -173,7 +174,7 @@
                                 </div>
                                 <div class="col-md-5">
                                     <input type="text" id="searchProduct" class="form-control"
-                                        placeholder="Search Product...">
+                                        onkeyup="searchProduct()" placeholder="Search Product...">
                                 </div>
                                 <div class="mb-4">
                                     <button class="btn btn-sm me-1 category-btn" onclick="filterCategory('all', this)"
@@ -244,7 +245,7 @@
                                 <span class= "fw-bold total-price" id="total">Rp.0</span>
                             </div>
 
-                            <button class="btn btn-success w-100 py-3">Payment</button>
+                            <button onclick="processPayment()" class="btn btn-success w-100 py-3">Payment</button>
                         </div>
                     </div>
                 </div>
@@ -310,7 +311,6 @@
             }
 
             displayCart();
-            calculateCart();
             console.log(cart);
         }
 
@@ -332,22 +332,23 @@
             cart.forEach(function(item) {
                 cartItems.innerHTML +=
                     `<div class="cart-item">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                             <strong>${item.name}</strong>
-                                <div class="small text-muted">${item.price}</div>
-                            </div>
-                            <strong>${item.price*item.qty}</strong>
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>${item.name}</strong>
+                            <div class="small text-muted">Rp ${formatRupiah(item.price)}</div>
+                        </div>
+                            <strong>Rp ${formatRupiah(item.price * item.qty)}</strong>
                         </div>
                         <div class="d-flex align-items-center mt-3">
-                                <button onclick="decreaseItem(${item.id})" type="button" class="btn btn-outline-secondary quantity-btn">-</button> 
+                            <button onclick="decreaseItem(${item.id})" type="button" class="btn btn-outline-secondary quantity-btn">-</button> 
                             <span>${item.qty}</span>
-                                <button onclick="increaseItem(${item.id})" type="button" class="btn btn-outline-secondary quantity-btn">+</button>
-                                <button onclick="removeItem(${item.id})" type="button" class="btn btn-outline-danger ms-auto"><i class="bi bi-trash"></i></button> 
-
+                            <button onclick="increaseItem(${item.id})" type="button" class="btn btn-outline-secondary quantity-btn">+</button>
+                            <button onclick="removeItem(${item.id})" type="button" class="btn btn-outline-danger ms-auto"><i class="bi bi-trash"></i></button> 
                         </div>
                     </div> `
             })
+
+            calculateCart();
         }
 
         function removeItem(productId) {
@@ -364,12 +365,23 @@
                 return Number(item.id) === Number(productId);
             });
 
+
+
             item.qty--;
             if (item.qty <= 0) {
                 removeItem(productId);
                 return;
             }
 
+            displayCart();
+        }
+
+        function increaseItem(productId) {
+            const item = cart.find(function(item) {
+                return Number(item.id) === Number(productId);
+            });
+
+            item.qty++;
             displayCart();
         }
 
@@ -396,6 +408,62 @@
         function formatRupiah(number) {
             return new Intl.NumberFormat('id-ID').format(number)
         }
+
+
+        function searchProduct() {
+            const search = document.getElementById('searchProduct').value.toLowerCase().trim();
+            const products = document.querySelectorAll('.product-item');
+
+            products.forEach(function(product) {
+                const productName = product.dataset.name.toLowerCase();
+
+                // jika product name di dalam tabel nilainya sama pada saat user input
+                if (productName.includes(search)) {
+                    product.style.display = "";
+                } else {
+                    product.style.display = "none";
+                }
+            })
+
+        }
+
+        async function processPayment() {
+            if (cart.length === 0) {
+                alert('cart is Empty')
+                return;
+            }
+
+            try {
+                const response = await fetch("{{ route('order.store') }}", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector(`meta[name="csrf-token"]`).getAttribute(
+                            'content')
+                    },
+                    body: JSON.stringify({
+                        items: cart.map(function(item) {
+                            return {
+                                id: item.id,
+                                qty: item.qty
+                            }
+                        }),
+                        payment_method: "cash",
+                    })
+                })
+
+                const result = await response.json();
+                cart = [];
+                displayCart();
+                location.reload();
+
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        displayCart();
     </script>
 </body>
 
