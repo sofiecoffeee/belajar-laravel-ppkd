@@ -6,7 +6,7 @@
 
         <div class="mb-3">
             <label class="form-label">Nama</label>
-            <input type="text" class="form-control" name="nama">
+            <input type="text" class="form-control" name="name" value="{{ $edit->name }}">
         </div>
 
         <div class="form-check">

@@ -20,9 +20,13 @@
 
                     <td>
                         <a href="{{ route('category.edit', $value->id) }}" class="btn btn-success btn-sm">Edit</a>
-                        <button type="submit" onclick="return confirm('Yakin di hapus?')"
-                            class="btn btn-danger
-                                btn-sm">Delete</button>
+
+                        <form action="{{ route('category.destroy', $value->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" onclick="return confirm('Yakin di hapus?')"
+                                class="btn btn-danger btn-sm">Delete</button>
+                        </form>
                     </td>
                 </tr>
             @endforeach

@@ -15,6 +15,23 @@
             font-family: Arial, Helvetica, sans-serif;
         }
 
+        .category-btn {
+            background-color: white;
+            color: #7A9E5B;
+            border: 1px solid #7A9E5B;
+        }
+
+        .category-btn.active {
+            background-color: #7A9E5B;
+            color: white;
+        }
+
+        .category-btn:hover {
+            background-color: #7A9E5B;
+            color: white;
+            border-color: #7A9E5B;
+        }
+
         .product-card {
             border: none;
             border-radius: 15px;
@@ -38,6 +55,10 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
+        }
+
+        .product.item {
+            cursor: pointer;
         }
 
         .price {
@@ -155,23 +176,32 @@
                                         placeholder="Search Product...">
                                 </div>
                                 <div class="mb-4">
-                                    <button class="btn btn-dark btn-sm me-1 category-btn">Semua</button>
+                                    <button class="btn btn-sm me-1 category-btn" onclick="filterCategory('all', this)"
+                                        data-category="all">
+                                        Semua</button>
                                     @foreach ($categories as $category)
-                                        <button
-                                            class="btn btn-dark btn-sm me-1 category-btn">{{ $category->name ?? '' }}</button>
+                                        <button class="btn btn-sm me-1 category-btn"
+                                            onclick="filterCategory('{{ $category->id }}', this)"
+                                            data-category="{{ $category->id }}">
+
+                                            {{ $category->name ?? '' }}</button>
                                     @endforeach
 
                                 </div>
 
                                 <div class="row g-3 d-flex" id="productList">
                                     @foreach ($products as $product)
-                                        <div class="col-md-4 col-sm-6">
+                                        <div class="col-md-4 col-sm-6 product-item"
+                                            data-category="{{ $product->category_id }}" data-id="{{ $product->id }}"
+                                            data-name="{{ $product->name }}" data-price="{{ $product->price }}"
+                                            onclick="addToCart({{ $product->id }})">
                                             <div class="card product-card shadow h-100">
                                                 <div class="product-image"><img
                                                         src="{{ asset('storage/' . $product->photo) }}" alt="">
                                                 </div>
                                                 <div class="card-body">
-                                                    <span class="badge bg-light text-dark mb-2">Category Product</span>
+                                                    <span
+                                                        class="badge bg-light text-dark mb-2">{{ $product->category->name }}</span>
                                                     <h6 class="fw-bold">{{ $product->name ?? '' }}</h6>
                                                     <span
                                                         class="price">{{ number_format($product->price, 0, ',', '.') }}</span>
@@ -189,38 +219,184 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between mb-3">
                                 <div> <i class="bi bi-cart4" style="fw-bold"></i>Cart</div>
-                                <span class="badge bg-dark" i="cartCount">0</span>
+                                <span class="badge bg-dark" id="cartCount">0</span>
                             </div>
                             <div class="mb-3" id="cartItems">
                                 <div class="text-center text-muted py-5">
                                     <i class="bi bi-cart4"></i>
                                     <p>Empty Cart</p>
                                 </div>
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>Sub Total</span>
-                                    <strong id="subtotal">Rp.0</strong>
-                                </div>
-
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>Pajak (11%)</span>
-                                    <strong id="tax">Rp.0</strong>
-                                </div>
-
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span class="fw-bold total-price">Total</span>
-                                    <span class= "fw-bold total-price" id="total">Rp.0</span>
-                                </div>
-
-                                <button class="btn btn-success w-100 py-3">Payment</button>
                             </div>
 
+                            {{-- subtotal --}}
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Sub Total</span>
+                                <strong id="subtotal">Rp.0</strong>
+                            </div>
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Pajak (11%)</span>
+                                <strong id="tax">Rp.0</strong>
+                            </div>
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="fw-bold total-price">Total</span>
+                                <span class= "fw-bold total-price" id="total">Rp.0</span>
+                            </div>
+
+                            <button class="btn btn-success w-100 py-3">Payment</button>
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
+    </div>
+    </main>
     </div>
 
+    <script>
+        function filterCategory(categoryId, button) {
+            console.log('Category:', categoryId);
+            console.log('Button:', button);
+            // selectorAll = array
+            const products = document.querySelectorAll('.product-item');
+            products.forEach(function(product) {
+                console.log(product);
+                {
+                    const categoryName = product.dataset.category;
+                    // jika user click category bernama all, muncul category all
+                    // jika user click category snack, dia bakal muncul yang snack doang
+                    if (categoryId === 'all' || categoryName === String(categoryId)) {
+                        product.style.display = "";
+                    } else {
+                        product.style.display = 'none';
+                    }
+
+                }
+            });
+            document.querySelectorAll('.category-btn').forEach(function(btn) {
+                // ketika user pindah kursor
+                btn.classList.remove('active');
+            });
+            // ketika user milih kategori
+            button.classList.add('active');
+        }
+
+        let cart = [];
+
+        function addToCart(productId) {
+
+            const product = document.querySelector(`.product-item[data-id="${productId}"]`);
+            if (!product) {
+                alert('Product no found');
+                return;
+            }
+
+            const productName = product.dataset.name;
+            const productPrice = Number(product.dataset.price);
+
+            const existingItem = cart.find(function(item) {
+                return Number(item.id) === Number(productId);
+            })
+
+            if (existingItem) {
+                existingItem.qty++;
+            } else {
+                cart.push({
+                    id: productId,
+                    name: productName,
+                    price: productPrice,
+                    qty: 1,
+                })
+            }
+
+            displayCart();
+            calculateCart();
+            console.log(cart);
+        }
+
+        function displayCart() {
+            const cartItems = document.getElementById('cartItems')
+
+            //ini kalo cart nya kosong
+            cartItems.innerHTML = "";
+            if (cart.length === 0) {
+                cartItems.innerHTML = `
+                <div class="text-center text-muted py-5">
+                    <i class="bi bi-cart4"></i>
+                    <p>Empty Cart</p>
+                </div>
+                `;
+            }
+
+            //ini kalo cart nya ada isinya
+            cart.forEach(function(item) {
+                cartItems.innerHTML +=
+                    `<div class="cart-item">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                             <strong>${item.name}</strong>
+                                <div class="small text-muted">${item.price}</div>
+                            </div>
+                            <strong>${item.price*item.qty}</strong>
+                        </div>
+                        <div class="d-flex align-items-center mt-3">
+                                <button onclick="decreaseItem(${item.id})" type="button" class="btn btn-outline-secondary quantity-btn">-</button> 
+                            <span>${item.qty}</span>
+                                <button onclick="increaseItem(${item.id})" type="button" class="btn btn-outline-secondary quantity-btn">+</button>
+                                <button onclick="removeItem(${item.id})" type="button" class="btn btn-outline-danger ms-auto"><i class="bi bi-trash"></i></button> 
+
+                        </div>
+                    </div> `
+            })
+        }
+
+        function removeItem(productId) {
+            cart = cart.filter(function(item) {
+                return Number(item.id) !== Number(productId);
+
+            });
+
+            displayCart();
+        }
+
+        function decreaseItem(productId) {
+            const item = cart.find(function(item) {
+                return Number(item.id) === Number(productId);
+            });
+
+            item.qty--;
+            if (item.qty <= 0) {
+                removeItem(productId);
+                return;
+            }
+
+            displayCart();
+        }
+
+        function calculateCart() {
+            let subtotal = 0;
+            let itemCount = 0;
+
+            cart.forEach(function(item) {
+                subtotal += Number(item.price) * Number(item.qty);
+                itemCount += Number(item.qty);
+
+            });
+            document.getElementById('cartCount').innerText = `${cart.length}`
+
+            const tax = subtotal * 0.11;
+            const total = subtotal + tax;
+            document.getElementById('subtotal').innerText = `Rp ${formatRupiah(subtotal)}`
+            document.getElementById('tax').innerText = `Rp ${formatRupiah(tax)}`
+            document.getElementById('total').innerText = `Rp ${formatRupiah(total)}`
+
+
+        }
+
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID').format(number)
+        }
+    </script>
 </body>
 
 </html>

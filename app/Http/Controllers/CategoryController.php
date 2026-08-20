@@ -31,7 +31,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
        Category::create([
-        'name' => $request->nama,
+        'name' => $request->name,
         'is_active' => $request->is_active
     ]);
 
@@ -61,12 +61,12 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $category = category::find($id);
+        $category = category::findOrFail($id);
         $category->update([
             'name'=> $request->name,
-            'is-active'=> $request->is_active
+            'is_active'=> $request->is_active
         ]);
-        return redirect()->to('category');
+        return redirect()->route('category.index');
     }
 
 
@@ -74,9 +74,12 @@ class CategoryController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
+    
     {
-        Category::find($id)->delete();
+    //      dd($id);
+            $category = Category::findOrFail($id);
+            $category->delete();
 
-        return redirect()->to('category');
+        return redirect()->route('category.index');
     }
 }
